@@ -18,9 +18,9 @@ class Video {
     }
 
     // Initialize the server
-    start() {
+    enable() {
         this.udpSocket.bind(this.videoPort, () => {
-            console.log(`Listening for UDP messages on port ${this.videoPort}`);
+            console.log(`Listening for UDP messages on ${this.videoIp}:${this.videoPort}`);
             this._sendInitHexMessages();
         });
 
