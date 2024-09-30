@@ -1,6 +1,5 @@
 const express = require('express');
 const dgram = require('dgram');
-
 class Video {
     constructor(videoIp, videoPort, localhostPort) {
         this.videoPort = videoPort; // Port for UDP communication
@@ -20,7 +19,7 @@ class Video {
     // Initialize the server
     enable() {
         this.udpSocket.bind(this.videoPort, () => {
-            console.log(`Listening for UDP messages on ${this.videoIp}:${this.videoPort}`);
+            console.log(`Listening for UDP messages on port ${this.videoPort}`);
             this._sendInitHexMessages();
         });
 
@@ -62,7 +61,9 @@ class Video {
     // Setup UDP socket to listen for incoming messages
     _setupUdpSocket() {
         this.udpSocket.on('message', (msg, rinfo) => {
-            this.videoData.push(msg); // Store received video data
+            if (msg.length > 0) {
+                this.videoData.push(msg); // Store received video data
+            }
         });
     }
 
@@ -91,7 +92,7 @@ class Video {
                 }
             });
         }
-
+        
         // Clean up and exit after a short delay
         setTimeout(() => {
             this.udpSocket.close();
@@ -100,9 +101,5 @@ class Video {
         }, 1000); // Wait a moment before closing
     }
 }
-
-// Handle process termination signals for graceful shutdown
-process.on('SIGINT', () => { videoStreamServer.shutdown(); });
-process.on('SIGTERM', () => { videoStreamServer.shutdown(); });
 
 module.exports = Video;
